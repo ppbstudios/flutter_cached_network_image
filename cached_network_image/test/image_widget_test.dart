@@ -13,8 +13,8 @@ void main() {
   });
 
   tearDown(() {
-    PaintingBinding.instance.imageCache.clear();
-    PaintingBinding.instance.imageCache.clearLiveImages();
+    PaintingBinding.instance?.imageCache?.clear();
+    PaintingBinding.instance?.imageCache?.clearLiveImages();
   });
 
   group('test logger', () {
@@ -81,8 +81,7 @@ void main() {
       expect(thrown, isTrue);
     });
 
-    testWidgets("errorBuilder doesn't call when image doesn't fail",
-        (tester) async {
+    testWidgets("errorBuilder doesn't call when image doesn't fail", (tester) async {
       var imageUrl = '123456';
       // Create the widget by telling the tester to build it.
       cacheManager.returns(imageUrl, kTransparentImage);

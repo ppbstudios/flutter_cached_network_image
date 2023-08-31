@@ -5,10 +5,10 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/scheduler.dart' show SchedulerBinding;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class FakeFrameInfo implements FrameInfo {
   const FakeFrameInfo(this._duration, this._image);
@@ -63,8 +63,7 @@ class MockCodec implements Codec {
 }
 
 class FakeEventReportingImageStreamCompleter extends ImageStreamCompleter {
-  FakeEventReportingImageStreamCompleter(
-      {Stream<ImageChunkEvent>? chunkEvents}) {
+  FakeEventReportingImageStreamCompleter({Stream<ImageChunkEvent>? chunkEvents}) {
     if (chunkEvents != null) {
       chunkEvents.listen(
         (ImageChunkEvent event) {
@@ -108,11 +107,9 @@ void main() {
 
     expect(chunkStream.hasListener, true);
 
-    chunkStream.add(
-        const ImageChunkEvent(cumulativeBytesLoaded: 1, expectedTotalBytes: 3));
+    chunkStream.add(const ImageChunkEvent(cumulativeBytesLoaded: 1, expectedTotalBytes: 3));
 
-    final ImageStreamListener listener =
-        ImageStreamListener((ImageInfo info, bool syncCall) {});
+    final ImageStreamListener listener = ImageStreamListener((ImageInfo info, bool syncCall) {});
     // Cause the completer to dispose.
     completer.addListener(listener);
     completer.removeListener(listener);
@@ -123,12 +120,10 @@ void main() {
     // make sure the completer does not assert that it's disposed and still
     // receiving chunk events. Streams from the network can keep sending data
     // even after evicting an image from the cache, for example.
-    chunkStream.add(
-        const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
+    chunkStream.add(const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
   });
 
-  testWidgets('Decoding starts when a listener is added after codec is ready',
-      (WidgetTester tester) async {
+  testWidgets('Decoding starts when a listener is added after codec is ready', (WidgetTester tester) async {
     final codecStream = StreamController<Codec>();
     final mockCodec = MockCodec();
     mockCodec.frameCount = 1;
@@ -147,8 +142,7 @@ void main() {
     expect(mockCodec.numFramesAsked, 1);
   });
 
-  testWidgets('Decoding starts when a codec is ready after a listener is added',
-      (WidgetTester tester) async {
+  testWidgets('Decoding starts when a codec is ready after a listener is added', (WidgetTester tester) async {
     final codecStream = StreamController<Codec>();
     final mockCodec = MockCodec();
     mockCodec.frameCount = 1;
@@ -167,8 +161,7 @@ void main() {
     expect(mockCodec.numFramesAsked, 1);
   });
 
-  testWidgets('Adding a second codec triggers start decoding',
-      (WidgetTester tester) async {
+  testWidgets('Adding a second codec triggers start decoding', (WidgetTester tester) async {
     final codecStream = StreamController<Codec>();
     final firstCodec = MockCodec();
     final secondCodec = MockCodec();
@@ -194,8 +187,7 @@ void main() {
     expect(secondCodec.numFramesAsked, 1);
   });
 
-  testWidgets('Decoding does not crash when disposed',
-      (WidgetTester tester) async {
+  testWidgets('Decoding does not crash when disposed', (WidgetTester tester) async {
     final codecStream = StreamController<Codec>();
     final mockCodec = MockCodec();
     mockCodec.frameCount = 1;
@@ -214,19 +206,16 @@ void main() {
     await tester.idle();
     expect(mockCodec.numFramesAsked, 1);
 
-    final FrameInfo frame =
-        FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
+    final FrameInfo frame = FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
     mockCodec.completeNextFrame(frame);
     imageStream.removeListener(streamListener);
     await tester.idle();
   });
 
-  testWidgets('Chunk events of base ImageStreamCompleter are delivered',
-      (WidgetTester tester) async {
+  testWidgets('Chunk events of base ImageStreamCompleter are delivered', (WidgetTester tester) async {
     final chunkEvents = <ImageChunkEvent>[];
     final streamController = StreamController<ImageChunkEvent>();
-    final ImageStreamCompleter imageStream =
-        FakeEventReportingImageStreamCompleter(
+    final ImageStreamCompleter imageStream = FakeEventReportingImageStreamCompleter(
       chunkEvents: streamController.stream,
     );
 
@@ -236,10 +225,8 @@ void main() {
         chunkEvents.add(event);
       },
     ));
-    streamController.add(
-        const ImageChunkEvent(cumulativeBytesLoaded: 1, expectedTotalBytes: 3));
-    streamController.add(
-        const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
+    streamController.add(const ImageChunkEvent(cumulativeBytesLoaded: 1, expectedTotalBytes: 3));
+    streamController.add(const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
     await tester.idle();
 
     expect(chunkEvents.length, 2);
@@ -249,18 +236,14 @@ void main() {
     expect(chunkEvents[1].expectedTotalBytes, 3);
   });
 
-  testWidgets(
-      'Chunk events of base ImageStreamCompleter are not buffered before listener registration',
-      (WidgetTester tester) async {
+  testWidgets('Chunk events of base ImageStreamCompleter are not buffered before listener registration', (WidgetTester tester) async {
     final chunkEvents = <ImageChunkEvent>[];
     final streamController = StreamController<ImageChunkEvent>();
-    final ImageStreamCompleter imageStream =
-        FakeEventReportingImageStreamCompleter(
+    final ImageStreamCompleter imageStream = FakeEventReportingImageStreamCompleter(
       chunkEvents: streamController.stream,
     );
 
-    streamController.add(
-        const ImageChunkEvent(cumulativeBytesLoaded: 1, expectedTotalBytes: 3));
+    streamController.add(const ImageChunkEvent(cumulativeBytesLoaded: 1, expectedTotalBytes: 3));
     await tester.idle();
     imageStream.addListener(ImageStreamListener(
       (ImageInfo image, bool synchronousCall) {},
@@ -268,8 +251,7 @@ void main() {
         chunkEvents.add(event);
       },
     ));
-    streamController.add(
-        const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
+    streamController.add(const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
     await tester.idle();
 
     expect(chunkEvents.length, 1);
@@ -277,8 +259,7 @@ void main() {
     expect(chunkEvents[0].expectedTotalBytes, 3);
   });
 
-  testWidgets('Chunk events of MultiImageStreamCompleter are delivered',
-      (WidgetTester tester) async {
+  testWidgets('Chunk events of MultiImageStreamCompleter are delivered', (WidgetTester tester) async {
     final chunkEvents = <ImageChunkEvent>[];
     final codecStream = StreamController<Codec>();
     final streamController = StreamController<ImageChunkEvent>();
@@ -294,10 +275,8 @@ void main() {
         chunkEvents.add(event);
       },
     ));
-    streamController.add(
-        const ImageChunkEvent(cumulativeBytesLoaded: 1, expectedTotalBytes: 3));
-    streamController.add(
-        const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
+    streamController.add(const ImageChunkEvent(cumulativeBytesLoaded: 1, expectedTotalBytes: 3));
+    streamController.add(const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
     await tester.idle();
 
     expect(chunkEvents.length, 2);
@@ -307,9 +286,7 @@ void main() {
     expect(chunkEvents[1].expectedTotalBytes, 3);
   });
 
-  testWidgets(
-      'Chunk events of MultiImageStreamCompleter are not buffered before listener registration',
-      (WidgetTester tester) async {
+  testWidgets('Chunk events of MultiImageStreamCompleter are not buffered before listener registration', (WidgetTester tester) async {
     final chunkEvents = <ImageChunkEvent>[];
     final codecStream = StreamController<Codec>();
     final streamController = StreamController<ImageChunkEvent>();
@@ -319,8 +296,7 @@ void main() {
       scale: 1.0,
     );
 
-    streamController.add(
-        const ImageChunkEvent(cumulativeBytesLoaded: 1, expectedTotalBytes: 3));
+    streamController.add(const ImageChunkEvent(cumulativeBytesLoaded: 1, expectedTotalBytes: 3));
     await tester.idle();
     imageStream.addListener(ImageStreamListener(
       (ImageInfo image, bool synchronousCall) {},
@@ -328,8 +304,7 @@ void main() {
         chunkEvents.add(event);
       },
     ));
-    streamController.add(
-        const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
+    streamController.add(const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
     await tester.idle();
 
     expect(chunkEvents.length, 1);
@@ -354,8 +329,7 @@ void main() {
       },
     ));
     streamController.addError(Error());
-    streamController.add(
-        const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
+    streamController.add(const ImageChunkEvent(cumulativeBytesLoaded: 2, expectedTotalBytes: 3));
     await tester.idle();
 
     expect(tester.takeException(), isNotNull);
@@ -389,8 +363,7 @@ void main() {
     expect(tester.takeException(), 'frame completion error');
   });
 
-  testWidgets('ImageStream emits frame (static image)',
-      (WidgetTester tester) async {
+  testWidgets('ImageStream emits frame (static image)', (WidgetTester tester) async {
     final mockCodec = MockCodec();
     mockCodec.frameCount = 1;
     final codecStream = StreamController<Codec>();
@@ -401,27 +374,21 @@ void main() {
     );
 
     final emittedImages = <ImageInfo>[];
-    imageStream.addListener(
-        ImageStreamListener((ImageInfo image, bool synchronousCall) {
+    imageStream.addListener(ImageStreamListener((ImageInfo image, bool synchronousCall) {
       emittedImages.add(image);
     }));
 
     codecStream.add(mockCodec);
     await tester.idle();
 
-    final FrameInfo frame =
-        FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
+    final FrameInfo frame = FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
     mockCodec.completeNextFrame(frame);
     await tester.idle();
 
-    expect(
-        emittedImages
-            .every((ImageInfo info) => info.image.isCloneOf(frame.image)),
-        true);
+    expect(emittedImages.every((ImageInfo info) => info.image.isCloneOf(frame.image)), true);
   });
 
-  testWidgets('ImageStream emits frames (animated images)',
-      (WidgetTester tester) async {
+  testWidgets('ImageStream emits frames (animated images)', (WidgetTester tester) async {
     final mockCodec = MockCodec();
     mockCodec.frameCount = 2;
     mockCodec.repetitionCount = -1;
@@ -433,16 +400,14 @@ void main() {
     );
 
     final emittedImages = <ImageInfo>[];
-    imageStream.addListener(
-        ImageStreamListener((ImageInfo image, bool synchronousCall) {
+    imageStream.addListener(ImageStreamListener((ImageInfo image, bool synchronousCall) {
       emittedImages.add(image);
     }));
 
     codecStream.add(mockCodec);
     await tester.idle();
 
-    final FrameInfo frame1 =
-        FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
+    final FrameInfo frame1 = FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
     mockCodec.completeNextFrame(frame1);
     await tester.idle();
     // We are waiting for the next animation tick, so at this point no frames
@@ -452,8 +417,7 @@ void main() {
     await tester.pump();
     expect(emittedImages.single.image.isCloneOf(frame1.image), true);
 
-    final FrameInfo frame2 =
-        FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
+    final FrameInfo frame2 = FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
     mockCodec.completeNextFrame(frame2);
 
     await tester.pump(const Duration(milliseconds: 100));
@@ -482,8 +446,7 @@ void main() {
     );
 
     final emittedImages = <ImageInfo>[];
-    imageStream.addListener(
-        ImageStreamListener((ImageInfo image, bool synchronousCall) {
+    imageStream.addListener(ImageStreamListener((ImageInfo image, bool synchronousCall) {
       emittedImages.add(image);
     }));
 
@@ -491,8 +454,7 @@ void main() {
     await tester.idle();
 
     final frame1 = FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
-    final frame2 =
-        FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
+    final frame2 = FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
 
     mockCodec.completeNextFrame(frame1.clone());
     await tester.idle(); // let nextFrameFuture complete
@@ -513,8 +475,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
   });
 
-  testWidgets('animation doesnt repeat more than specified',
-      (WidgetTester tester) async {
+  testWidgets('animation doesnt repeat more than specified', (WidgetTester tester) async {
     final mockCodec = MockCodec();
     mockCodec.frameCount = 2;
     mockCodec.repetitionCount = 0;
@@ -526,18 +487,15 @@ void main() {
     );
 
     final emittedImages = <ImageInfo>[];
-    imageStream.addListener(
-        ImageStreamListener((ImageInfo image, bool synchronousCall) {
+    imageStream.addListener(ImageStreamListener((ImageInfo image, bool synchronousCall) {
       emittedImages.add(image);
     }));
 
     codecStream.add(mockCodec);
     await tester.idle();
 
-    final FrameInfo frame1 =
-        FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
-    final FrameInfo frame2 =
-        FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
+    final FrameInfo frame1 = FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
+    final FrameInfo frame2 = FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
 
     mockCodec.completeNextFrame(frame1);
     await tester.idle(); // let nextFrameFuture complete
@@ -555,8 +513,7 @@ void main() {
     expect(emittedImages[1].image.isCloneOf(frame2.image), true);
   });
 
-  testWidgets('frames are only decoded when there are listeners',
-      (WidgetTester tester) async {
+  testWidgets('frames are only decoded when there are listeners', (WidgetTester tester) async {
     final mockCodec = MockCodec();
     mockCodec.frameCount = 2;
     mockCodec.repetitionCount = -1;
@@ -574,10 +531,8 @@ void main() {
     codecStream.add(mockCodec);
     await tester.idle();
 
-    final FrameInfo frame1 =
-        FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
-    final FrameInfo frame2 =
-        FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
+    final FrameInfo frame1 = FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
+    final FrameInfo frame2 = FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
 
     mockCodec.completeNextFrame(frame1);
     await tester.idle(); // let nextFrameFuture complete
@@ -625,10 +580,8 @@ void main() {
     codecStream.add(mockCodec);
     await tester.idle();
 
-    final FrameInfo frame1 =
-        FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
-    final FrameInfo frame2 =
-        FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
+    final FrameInfo frame1 = FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
+    final FrameInfo frame2 = FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
 
     mockCodec.completeNextFrame(frame1);
     await tester.idle(); // let nextFrameFuture complete
@@ -648,8 +601,7 @@ void main() {
     expect(emittedImages2[1].image.isCloneOf(frame2.image), true);
   });
 
-  testWidgets('timer is canceled when listeners are removed',
-      (WidgetTester tester) async {
+  testWidgets('timer is canceled when listeners are removed', (WidgetTester tester) async {
     final mockCodec = MockCodec();
     mockCodec.frameCount = 2;
     mockCodec.repetitionCount = -1;
@@ -666,10 +618,8 @@ void main() {
     codecStream.add(mockCodec);
     await tester.idle();
 
-    final FrameInfo frame1 =
-        FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
-    final FrameInfo frame2 =
-        FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
+    final FrameInfo frame1 = FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
+    final FrameInfo frame2 = FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
 
     mockCodec.completeNextFrame(frame1);
     await tester.idle(); // let nextFrameFuture complete
@@ -684,8 +634,7 @@ void main() {
     // point.
   });
 
-  testWidgets('error handlers can intercept errors',
-      (WidgetTester tester) async {
+  testWidgets('error handlers can intercept errors', (WidgetTester tester) async {
     final mockCodec = MockCodec();
     mockCodec.frameCount = 1;
     final codecStream = StreamController<Codec>();
@@ -741,8 +690,7 @@ void main() {
     imageStream.addListener(ImageStreamListener(listener));
     imageStream.removeListener(ImageStreamListener(listener));
 
-    final FrameInfo frame1 =
-        FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
+    final FrameInfo frame1 = FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
 
     mockCodec.completeNextFrame(frame1);
     await tester.idle(); // let nextFrameFuture complete
@@ -751,11 +699,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200)); // emit 2nd frame.
   });
 
-  testWidgets(
-      'Keep alive handles do not drive frames or prevent last listener callbacks',
-      (WidgetTester tester) async {
-    final image10x10 =
-        (await tester.runAsync(() => createTestImage(width: 10, height: 10)));
+  testWidgets('Keep alive handles do not drive frames or prevent last listener callbacks', (WidgetTester tester) async {
+    final image10x10 = (await tester.runAsync(() => createTestImage(width: 10, height: 10)));
     final mockCodec = MockCodec();
     mockCodec.frameCount = 2;
     mockCodec.repetitionCount = -1;
@@ -779,8 +724,7 @@ void main() {
     expect(lastListenerDropped, false);
     final handle = imageStream.keepAlive();
     expect(lastListenerDropped, false);
-    SchedulerBinding.instance
-        .debugAssertNoTransientCallbacks('Only passive listeners');
+    SchedulerBinding.instance?.debugAssertNoTransientCallbacks('Only passive listeners');
 
     codecStream.add(mockCodec);
     await tester.idle();
@@ -790,8 +734,7 @@ void main() {
     final frame1 = FakeFrameInfo(Duration.zero, image20x10);
     mockCodec.completeNextFrame(frame1);
     await tester.idle();
-    SchedulerBinding.instance
-        .debugAssertNoTransientCallbacks('Only passive listeners');
+    SchedulerBinding.instance?.debugAssertNoTransientCallbacks('Only passive listeners');
     await tester.pump();
     expect(onImageCount, 0);
 
@@ -800,7 +743,7 @@ void main() {
     final frame2 = FakeFrameInfo(Duration.zero, image10x10!);
     mockCodec.completeNextFrame(frame2);
     await tester.idle();
-    expect(SchedulerBinding.instance.transientCallbackCount, 1);
+    expect(SchedulerBinding.instance?.transientCallbackCount ?? -1, 1);
     await tester.pump();
 
     expect(onImageCount, 1);
@@ -810,18 +753,16 @@ void main() {
 
     mockCodec.completeNextFrame(frame1);
     await tester.idle();
-    expect(SchedulerBinding.instance.transientCallbackCount, 1);
+    expect(SchedulerBinding.instance?.transientCallbackCount ?? -1, 1);
     await tester.pump();
 
     expect(onImageCount, 1);
 
-    SchedulerBinding.instance
-        .debugAssertNoTransientCallbacks('Only passive listeners');
+    SchedulerBinding.instance?.debugAssertNoTransientCallbacks('Only passive listeners');
 
     mockCodec.completeNextFrame(frame2);
     await tester.idle();
-    SchedulerBinding.instance
-        .debugAssertNoTransientCallbacks('Only passive listeners');
+    SchedulerBinding.instance?.debugAssertNoTransientCallbacks('Only passive listeners');
     await tester.pump();
 
     expect(onImageCount, 1);
@@ -829,8 +770,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('Multiframe image is completed before next image is shown',
-      (WidgetTester tester) async {
+  testWidgets('Multiframe image is completed before next image is shown', (WidgetTester tester) async {
     final firstCodec = MockCodec();
     firstCodec.frameCount = 3;
     firstCodec.repetitionCount = -1;
@@ -849,12 +789,9 @@ void main() {
     codecStream.add(firstCodec);
     await tester.idle();
 
-    final FrameInfo frame1 =
-        FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
-    final FrameInfo frame2 =
-        FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
-    final FrameInfo frame3 =
-        FakeFrameInfo(const Duration(milliseconds: 200), image300x100);
+    final FrameInfo frame1 = FakeFrameInfo(const Duration(milliseconds: 200), image20x10);
+    final FrameInfo frame2 = FakeFrameInfo(const Duration(milliseconds: 400), image200x100);
+    final FrameInfo frame3 = FakeFrameInfo(const Duration(milliseconds: 200), image300x100);
 
     firstCodec.completeNextFrame(frame1);
     await tester.idle(); // let nextFrameFuture complete

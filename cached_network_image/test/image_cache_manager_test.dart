@@ -15,8 +15,8 @@ void main() {
   setUp(() {});
 
   tearDown(() {
-    PaintingBinding.instance.imageCache.clear();
-    PaintingBinding.instance.imageCache.clearLiveImages();
+    PaintingBinding.instance?.imageCache?.clear();
+    PaintingBinding.instance?.imageCache?.clearLiveImages();
   });
 
   test('Supplying an ImageCacheManager should call getImageFile', () async {
@@ -26,8 +26,7 @@ void main() {
     cacheManager.returns(url, kTransparentImage);
     final imageAvailable = Completer<void>();
 
-    final ImageProvider imageProvider =
-        CachedNetworkImageProvider(url, cacheManager: cacheManager);
+    final ImageProvider imageProvider = CachedNetworkImageProvider(url, cacheManager: cacheManager);
     final result = imageProvider.resolve(ImageConfiguration.empty);
 
     result.addListener(ImageStreamListener(
@@ -61,8 +60,7 @@ void main() {
     cacheManager.returns(url, kTransparentImage);
     final imageAvailable = Completer<void>();
 
-    final ImageProvider imageProvider =
-        CachedNetworkImageProvider(url, cacheManager: cacheManager);
+    final ImageProvider imageProvider = CachedNetworkImageProvider(url, cacheManager: cacheManager);
     final result = imageProvider.resolve(ImageConfiguration.empty);
 
     result.addListener(ImageStreamListener(
@@ -88,12 +86,10 @@ void main() {
     cacheManager.returns(url, kTransparentImage);
     final imageAvailable = Completer<void>();
 
-    final ImageProvider imageProvider = CachedNetworkImageProvider(url,
-        cacheManager: cacheManager, maxHeight: 20);
+    final ImageProvider imageProvider = CachedNetworkImageProvider(url, cacheManager: cacheManager, maxHeight: 20);
     final result = imageProvider.resolve(ImageConfiguration.empty);
 
-    result.addListener(
-        ImageStreamListener((ImageInfo image, bool synchronousCall) {
+    result.addListener(ImageStreamListener((ImageInfo image, bool synchronousCall) {
       imageAvailable.complete();
     }, onError: (dynamic error, StackTrace? stackTrace) {
       caughtError.complete(error);
@@ -111,12 +107,10 @@ void main() {
     cacheManager.returns(url, kTransparentImage);
     final imageAvailable = Completer<void>();
 
-    final ImageProvider imageProvider = CachedNetworkImageProvider(url,
-        cacheManager: cacheManager, maxWidth: 20);
+    final ImageProvider imageProvider = CachedNetworkImageProvider(url, cacheManager: cacheManager, maxWidth: 20);
     final result = imageProvider.resolve(ImageConfiguration.empty);
 
-    result.addListener(
-        ImageStreamListener((ImageInfo image, bool synchronousCall) {
+    result.addListener(ImageStreamListener((ImageInfo image, bool synchronousCall) {
       imageAvailable.complete();
     }, onError: (dynamic error, StackTrace? stackTrace) {
       caughtError.complete(error);

@@ -25,8 +25,8 @@ void main() {
   });
 
   tearDown(() {
-    PaintingBinding.instance.imageCache.clear();
-    PaintingBinding.instance.imageCache.clearLiveImages();
+    PaintingBinding.instance?.imageCache?.clear();
+    PaintingBinding.instance?.imageCache?.clearLiveImages();
   });
 
   test('Expect thrown exception with statusCode - evicts from cache', () async {
@@ -35,26 +35,23 @@ void main() {
 
     final caughtError = Completer<dynamic>();
 
-    final ImageProvider imageProvider = CachedNetworkImageProvider(
-        nonconst(requestUrl),
-        cacheManager: cacheManager);
-    expect(imageCache.pendingImageCount, 0);
-    expect(imageCache.statusForKey(imageProvider).untracked, true);
+    final ImageProvider imageProvider = CachedNetworkImageProvider(nonconst(requestUrl), cacheManager: cacheManager);
+    expect(imageCache?.pendingImageCount ?? -1, 0);
+    expect(imageCache?.statusForKey(imageProvider).untracked ?? false, true);
 
     final result = imageProvider.resolve(ImageConfiguration.empty);
 
-    expect(imageCache.pendingImageCount, 1);
-    expect(imageCache.statusForKey(imageProvider).pending, true);
+    expect(imageCache?.pendingImageCount ?? -1, 1);
+    expect(imageCache?.statusForKey(imageProvider).pending ?? false, true);
 
-    result.addListener(ImageStreamListener((ImageInfo info, bool syncCall) {},
-        onError: (dynamic error, StackTrace? stackTrace) {
+    result.addListener(ImageStreamListener((ImageInfo info, bool syncCall) {}, onError: (dynamic error, StackTrace? stackTrace) {
       caughtError.complete(error);
     }));
 
     final dynamic err = await caughtError.future;
 
-    expect(imageCache.pendingImageCount, 0);
-    expect(imageCache.statusForKey(imageProvider).untracked, true);
+    expect(imageCache?.pendingImageCount ?? -1, 0);
+    expect(imageCache?.statusForKey(imageProvider).untracked ?? false, true);
 
     expect(
       err,
@@ -70,9 +67,7 @@ void main() {
             Uri.parse(requestUrl),
           ),
     );
-  },
-      skip:
-          isBrowser); // Browser implementation does not use HTTP client but an <img> tag.
+  }, skip: isBrowser); // Browser implementation does not use HTTP client but an <img> tag.
 
   test('Propagates http client errors during resolve()', () async {
     var uncaught = false;
@@ -80,21 +75,18 @@ void main() {
     cacheManager.throwsNotFound(url);
 
     await runZoned(() async {
-      final ImageProvider imageProvider =
-          CachedNetworkImageProvider(url, cacheManager: cacheManager);
+      final ImageProvider imageProvider = CachedNetworkImageProvider(url, cacheManager: cacheManager);
       final caughtError = Completer<bool>();
       FlutterError.onError = (FlutterErrorDetails details) {
         throw Error();
       };
       final result = imageProvider.resolve(ImageConfiguration.empty);
-      result.addListener(ImageStreamListener((ImageInfo info, bool syncCall) {},
-          onError: (dynamic error, StackTrace? stackTrace) {
+      result.addListener(ImageStreamListener((ImageInfo info, bool syncCall) {}, onError: (dynamic error, StackTrace? stackTrace) {
         caughtError.complete(true);
       }));
       expect(await caughtError.future, true);
     }, zoneSpecification: ZoneSpecification(
-      handleUncaughtError: (Zone zone, ZoneDelegate zoneDelegate, Zone parent,
-          Object error, StackTrace stackTrace) {
+      handleUncaughtError: (Zone zone, ZoneDelegate zoneDelegate, Zone parent, Object error, StackTrace stackTrace) {
         uncaught = true;
       },
     ));
@@ -106,8 +98,7 @@ void main() {
     var url = 'foo';
     var expectedResult = cacheManager.returns(url, kTransparentImage);
 
-    final ImageProvider imageProvider =
-        CachedNetworkImageProvider(nonconst('foo'), cacheManager: cacheManager);
+    final ImageProvider imageProvider = CachedNetworkImageProvider(nonconst('foo'), cacheManager: cacheManager);
     final result = imageProvider.resolve(ImageConfiguration.empty);
     final events = <ImageChunkEvent>[];
     result.addListener(ImageStreamListener(
@@ -124,10 +115,7 @@ void main() {
     await imageAvailable.future;
     expect(events.length, expectedResult.chunks);
     for (var i = 0; i < events.length; i++) {
-      expect(
-          events[i].cumulativeBytesLoaded,
-          math.min(
-              (i + 1) * expectedResult.chunkSize, kTransparentImage.length));
+      expect(events[i].cumulativeBytesLoaded, math.min((i + 1) * expectedResult.chunkSize, kTransparentImage.length));
       expect(events[i].expectedTotalBytes, kTransparentImage.length);
     }
   }, skip: isBrowser); // Browser loads images through <img> not Http.

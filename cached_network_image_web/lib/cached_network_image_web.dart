@@ -6,11 +6,8 @@ import 'dart:ui' as ui;
 import 'dart:ui';
 
 import 'package:cached_network_image_platform_interface'
-        '/cached_network_image_platform_interface.dart' as platform
-    show ImageLoader;
-import 'package:cached_network_image_platform_interface'
-        '/cached_network_image_platform_interface.dart'
-    show ImageRenderMethodForWeb;
+    '/cached_network_image_platform_interface.dart' as platform show ImageLoader;
+import 'package:cached_network_image_platform_interface/cached_network_image_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
@@ -123,8 +120,7 @@ class ImageLoader implements platform.ImageLoader {
     Function() evictImage,
   ) async* {
     try {
-      await for (var result in cacheManager.getFileStream(url,
-          key: cacheKey, withProgress: true, headers: headers)) {
+      await for (var result in cacheManager.getFileStream(url, key: cacheKey, withProgress: true, headers: headers)) {
         if (result is DownloadProgress) {
           chunkEvents.add(ImageChunkEvent(
             cumulativeBytesLoaded: result.downloaded,

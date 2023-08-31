@@ -103,8 +103,7 @@ class MultiImageStreamCompleter extends ImageStreamCompleter {
         _switchToNewCodec();
       } else {
         final completedCycles = _framesEmitted ~/ _codec!.frameCount;
-        if (_codec!.repetitionCount == -1 ||
-            completedCycles <= _codec!.repetitionCount) {
+        if (_codec!.repetitionCount == -1 || completedCycles <= _codec!.repetitionCount) {
           _decodeNextFrameAndSchedule();
         }
       }
@@ -156,7 +155,7 @@ class MultiImageStreamCompleter extends ImageStreamCompleter {
       return;
     }
     _frameCallbackScheduled = true;
-    SchedulerBinding.instance.scheduleFrameCallback(_handleAppFrame);
+    SchedulerBinding.instance?.scheduleFrameCallback(_handleAppFrame);
   }
 
   void _emitFrame(ImageInfo imageInfo) {
@@ -190,10 +189,7 @@ class MultiImageStreamCompleter extends ImageStreamCompleter {
   }
 
   void __maybeDispose() {
-    if (!__hadAtLeastOneListener ||
-        __disposed ||
-        hasListeners ||
-        __keepAliveHandles != 0) {
+    if (!__hadAtLeastOneListener || __disposed || hasListeners || __keepAliveHandles != 0) {
       return;
     }
 

@@ -6,6 +6,10 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
+import 'decoder_buffer_callback.dart';
+
+export 'decoder_buffer_callback.dart';
+
 /// Render options for images on the web platform.
 enum ImageRenderMethodForWeb {
   /// HtmlImage uses a default web image including default browser caching.
