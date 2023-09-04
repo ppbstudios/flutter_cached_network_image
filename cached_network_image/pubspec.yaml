@@ -11,9 +11,19 @@ dependencies:
   flutter_cache_manager: ^3.3.0
   octo_image: ^1.0.0
   cached_network_image_platform_interface:
-    path: ../cached_network_image_platform_interface
+    # Local 테스트
+    # path: ../cached_network_image_platform_interface
+    git:
+      url: git@github.com:ppbstudios/flutter_cached_network_image.git
+      ref: remote-pubspec
+      path: cached_network_image_platform_interface/
   cached_network_image_web:
-    path: ../cached_network_image_web
+    # Local 테스트
+    # path: ../cached_network_image_web
+    git:
+      url: git@github.com:ppbstudios/flutter_cached_network_image.git
+      ref: remote-pubspec
+      path: cached_network_image_web/
 
 
 dev_dependencies:
